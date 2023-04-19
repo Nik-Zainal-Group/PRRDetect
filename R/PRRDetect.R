@@ -13,7 +13,7 @@ prepare_PRRDetect <- function(Indel_VCF_path, SNV_VCF_path, genome.v, nparallel,
   SNV_fit <- signature_fits$SNV$exposures
   InDel_fit <- signature_fits$InDel$exposures
   colnames(SNV_fit) <- unlist(lapply(strsplit(colnames(SNV_fit), split = "_", fixed = T), function(x){tail(x,1)}))
-  return(list("SNV"=SNV_fit, "InDel"=InDel_fit))
+  return(list("SNV"=SNV_fit, "InDel"=InDel_fit, "SNV_Catalog"=catalogs$SNV_Catalog, "InDel_Catalog"=catalogs$Indel_Catalog))
 }
 
 
