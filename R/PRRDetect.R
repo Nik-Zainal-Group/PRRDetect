@@ -29,7 +29,7 @@ prepare_PRRDetect <- function(Indel_VCF_path, SNV_VCF_path, genome.v, nparallel,
 #' @param snv_fits : "SNV Signatures Fits"
 #' @return PRRDetect table
 #' @export
-PRRDetect <- function(InDel_fits, SNV_fits){
+PRRDetect <- function(InDel_fits, SNV_fits, SNV_Catalog, InDel_catalog){
 
   pure_MMR_sigs <- paste0("SBS", c(6,15,26,44,97))
   pure_POL_sigs <- paste0("SBS", c("10a", "10d"))
@@ -42,22 +42,22 @@ PRRDetect <- function(InDel_fits, SNV_fits){
   ## if the name of the signature is not present, which returns "integer(0)", then the sum is equal to 0, otherwise is equal to the rowsum
 
   ## SNV
-  ifelse(identical(which(colnames(SNV_fits) %in% pure_MMR_sigs), integer(0)), MMR_SBS <- 0 , MMR_SBS <- rowSums(SNV_fits[,which(colnames(SNV_fits) %in% pure_MMR_sigs), drop=F]))
+  ifelse(identical(which(colnames(SNV_fits) %in% pure_MMR_sigs), integer(0)), MMR_SBS <- 0 , MMR_SBS <- rowSums(SNV_fits[,which(colnames(SNV_fits) %in% pure_MMR_sigs), drop=F])/colSums(SNV_Catalog))
 
-  ifelse(identical(which(colnames(SNV_fits) %in% pure_POL_sigs), integer(0)), POL_SBS <- 0 , POL_SBS <- rowSums(SNV_fits[,which(colnames(SNV_fits) %in% pure_POL_sigs), drop=F]))
+  ifelse(identical(which(colnames(SNV_fits) %in% pure_POL_sigs), integer(0)), POL_SBS <- 0 , POL_SBS <- rowSums(SNV_fits[,which(colnames(SNV_fits) %in% pure_POL_sigs), drop=F])/colSums(SNV_Catalog))
 
-  ifelse(identical(which(colnames(SNV_fits) %in% mixed_sigs), integer(0)), MIX_SBS <- 0 , MIX_SBS <- rowSums(SNV_fits[,which(colnames(SNV_fits) %in% mixed_sigs), drop=F]))
+  ifelse(identical(which(colnames(SNV_fits) %in% mixed_sigs), integer(0)), MIX_SBS <- 0 , MIX_SBS <- rowSums(SNV_fits[,which(colnames(SNV_fits) %in% mixed_sigs), drop=F])/colSums(SNV_Catalog))
 
 
   ## INDEL
-  ifelse(identical(which(colnames(InDel_fits) %in% pure_MMR_sigs), integer(0)), MMR_IND <- 0 , MMR_IND <- rowSums(InDel_fits[,which(colnames(InDel_fits) %in% pure_MMR_indS), drop=F]))
+  ifelse(identical(which(colnames(InDel_fits) %in% pure_MMR_indS), integer(0)), MMR_IND <- 0 , MMR_IND <- rowSums(InDel_fits[,which(colnames(InDel_fits) %in% pure_MMR_indS), drop=F])/colSums(InDel_catalog))
 
-  ifelse(identical(which(colnames(InDel_fits) %in% pure_POL_sigs), integer(0)), POL_IND <- 0 , POL_IND <- rowSums(InDel_fits[,which(colnames(InDel_fits) %in% pure_POL_indS), drop=F]))
+  ifelse(identical(which(colnames(InDel_fits) %in% pure_POL_indS), integer(0)), POL_IND <- 0 , POL_IND <- rowSums(InDel_fits[,which(colnames(InDel_fits) %in% pure_POL_indS), drop=F])/colSums(InDel_catalog))
 
-  ifelse(identical(which(colnames(InDel_fits) %in% mixed_sigs), integer(0)), MIX_IND <- 0 , MIX_IND <- rowSums(InDel_fits[,which(colnames(InDel_fits) %in% mixed_indS), drop=F]))
+  ifelse(identical(which(colnames(InDel_fits) %in% mixed_indS), integer(0)), MIX_IND <- 0 , MIX_IND <- rowSums(InDel_fits[,which(colnames(InDel_fits) %in% mixed_indS), drop=F])/colSums(InDel_catalog))
 
 
-  Ratio <- (rowSums(InDel_fits[,-which(colnames(InDel_fits)=="unassigned"), drop = F]) + 1) / (rowSums(SNV_fits[,-which(colnames(SNV_fits) == "unassigned"), drop = F]) + 1)
+  Ratio <-  c(colSums(InDel_catalog) + 1)/(colSums(SNV_Catalog) + 1)
 
   final_df <- as.data.frame(cbind(MMR_SBS, MIX_SBS, POL_SBS, MMR_IND, MIX_IND, POL_IND, Ratio))
 
