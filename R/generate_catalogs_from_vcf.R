@@ -50,5 +50,5 @@ generate_catalogs_from_vcf <- function(Indel_VCF_path, SNV_VCF_path, genome.v, s
   colnames(InDel_catalog) <- sample_name
   SNV_catalog <- signature.tools.lib::vcfToSNVcatalogue(vcfFilename = SNV_VCF_path, genome.v = genome.v)$catalogue
   colnames(SNV_catalog) <- sample_name
-  return(list("Indel_Catalog"=InDel_catalog, "SNV_Catalog"=SNV_catalog))
+  return(list("Indel_Catalog"=InDel_catalog, "SNV_Catalog"=SNV_catalog, "total_SNV"=colSums(SNV_catalog), "total_InD"=nrow(InDel_VCF)))
 }
