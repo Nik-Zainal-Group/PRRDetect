@@ -19,8 +19,8 @@ PRRDetect is a R package that computes the probability for a sample to be Post-R
 To install PRRDetect in first place the github repo has to be cloned and you have to enter tin hte downloaded folder.
 
 ``` bash
-git clone https://github.com/GRinaldi97/synthetic.catalogs.git
-cd synthetic.catalogs
+git clone https://github.com/Nik-Zainal-Group/PRRDetect.git
+cd PRRDetect
 ```
 
 Successively open **R** and make sure you have the *devtools* package installed.
@@ -63,14 +63,13 @@ It outputs a list with the following objects:
   - **If a VCF file is given as input, then the total number of InDels is the total number of mutations, otherwise the sum of the mutations in the catalog will be given**
   
 
-
-
 ### **PRRDetect** has several parameters:
 
 - **InDel_fits**: Indel Signatures Fits
 - **SNV_fits**: SNV Signatures Fits
-- **total_SNV**: total number of SNVs of the sample
-- **total_InD**: total number of InDel mutation in the sample
+- **total_SNV**: Total number of SNVs of the sample
+- **total_InD**: Total number of InDel mutation in the sample
+- **prediction_type**: The type of model used. Default to "prob", which is the model published. Otherwise "abs" can be chosen.
 
 It outputs a table defining the probabilities of each sample to belong to the four classes: *Negative*,*MMRd*,*MMRd+Poly-dys*,*Poly-dys*. 
 
