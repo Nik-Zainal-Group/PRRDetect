@@ -5,17 +5,17 @@
 \title{prepare_PRRDetect}
 \usage{
 prepare_PRRDetect(
-  InDel_Catalogs,
-  SNV_Catalogs,
-  Indel_VCF_path,
-  total_InDel,
-  SNV_VCF_path,
-  genome.v,
-  nparallel,
-  is.filtered_SNV = F,
-  is.filtered_InDel = F,
-  sample_name,
-  organ,
+  InDel_Catalogs = NULL,
+  SNV_Catalogs = NULL,
+  Indel_VCF_path = NULL,
+  total_InDel = NULL,
+  SNV_VCF_path = NULL,
+  genome.v = "hg38",
+  nparallel = NULL,
+  is.filtered_SNV = T,
+  is.filtered_InDel = T,
+  sample_name = NULL,
+  organ = NULL,
   setseed = 42
 )
 }
@@ -34,9 +34,9 @@ prepare_PRRDetect(
 
 \item{nparallel:}{Number of threads for signature fit}
 
-\item{is.filtered_SNV:}{if yes, SNV VCF get filtered. Default equal to False}
+\item{is.filtered_SNV:}{if yes, SNV VCF get filtered. Default equal to False. SNV information gets filtered only if provided as a vector of paths.}
 
-\item{is.filtered_InDel:}{if yes InDel VCF get filtered. Default equal to False}
+\item{is.filtered_InDel:}{if yes InDel VCF get filtered. Default equal to False. InDel information gets filtered only if provided as a vector of paths.}
 
 \item{sample_name:}{Vector of sample names, it has to be in the same order of Indel VCF vector or list.}
 
@@ -45,7 +45,7 @@ prepare_PRRDetect(
 \item{setseed:}{Seed for reproducibility purposes}
 }
 \value{
-
+A list containing the indel and snv fits, the total number of SNVs, total number of InDels. If InDel VCF paths are provided, the total number of InDels is the number of InDels in the VCF file, otherwise it is the sum of the mutations found in the catalog.
 }
 \description{
 Prepares data for PRRDetect input

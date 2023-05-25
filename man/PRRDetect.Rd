@@ -7,13 +7,15 @@
 PRRDetect(InDel_fits, SNV_fits, total_SNV, total_InD, prediction_type = "prop")
 }
 \arguments{
-\item{ind_fits:}{Indel Signatures Fits}
+\item{InDel_fits:}{Indel Signatures Fits}
 
-\item{snv_fits:}{SNV Signatures Fits}
+\item{SNV_fits:}{SNV Signatures Fits}
 
 \item{total_SNV:}{total number of SNVs of the sample}
 
 \item{total_InD:}{total number of InDel mutation in the sample}
+
+\item{prediction_type:}{Models to use, "prop" is the one published. Otherwise "abs" for other model}
 }
 \value{
 PRRDetect table

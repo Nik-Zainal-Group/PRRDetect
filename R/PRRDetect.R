@@ -130,6 +130,7 @@ prepare_PRRDetect <- function(InDel_Catalogs=NULL,SNV_Catalogs=NULL, Indel_VCF_p
 #' @param SNV_fits: SNV Signatures Fits
 #' @param total_SNV: total number of SNVs of the sample
 #' @param total_InD: total number of InDel mutation in the sample
+#' @param prediction_type: Models to use, "prop" is the one published. Otherwise "abs" for other model
 #' @return PRRDetect table
 #' @export
 PRRDetect <- function(InDel_fits, SNV_fits, total_SNV, total_InD, prediction_type="prop"){
