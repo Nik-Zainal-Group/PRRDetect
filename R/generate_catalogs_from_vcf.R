@@ -1,7 +1,3 @@
-# TODO: check if InDel VCF has to be prepared for generate_catalogs_from_vcf
-# Do we assume that the Variants are already processed? Yes ??
-
-
 InDel_sigs_order <- c("A[Ins(C):R0]A", "A[Ins(C):R0]T", "Ins(C):R(0,3)", "Ins(C):R(4,6)",
                       "Ins(C):R(7,9)", "A[Ins(T):R(0,4)]A", "A[Ins(T):R(0,4)]C", "A[Ins(T):R(0,4)]G",
                       "C[Ins(T):R(0,4)]A", "C[Ins(T):R(0,4)]C", "C[Ins(T):R(0,4)]G",
@@ -30,25 +26,77 @@ InDel_sigs_order <- c("A[Ins(C):R0]A", "A[Ins(C):R0]T", "Ins(C):R(0,3)", "Ins(C)
                       "Del(6,):M1", "Del(6,):M2", "Del(6,):M3", "Del(6,):M(4,)", "Complex"
 )
 
-
-#' Generate catalogs from VCF files
+#' Generate catalogs from VCF data
 #'
-#' @param Indel_VCF_path : "Path of the InDel VCF file"
-#' @param SNV_VCF_path : "Path of the SNV VCF file"
-#' @param genome.v : "Genome version"
-#' @return List containing the catalogs
+#' This function returns the catalogs and the total number of mutations from VCF files. You can give just InDel VCF param or SNV VCF param.
+#'
+#' @param Indel_VCF: Vector of paths or list of data frames. If it is a vector of paths the file will be rearranged by the function, otherwise it has to be a list of dataframe having the following structure: "Sample", "chr", "position", "REF", "ALT"
+#' @param SNV_VCF:  Vector of paths or list of data frames.
+#' @param genome.v: Either "hg19" or "hg38", which is the default option.
+#' @param sample_name: Vector of sample names, it has to be in the same order of Indel VCF vector or list.
+#' @return Returns a list containing the Indel Catalos, total InD and/or SNV catalogs, total SNV
 #' @export
-generate_catalogs_from_vcf <- function(Indel_VCF_path, SNV_VCF_path, genome.v, sample_name){
-  InDel_VCF <- read.table(Indel_VCF_path)[c(3,1,2,4,5)]
-  InDel_VCF$V3 <- sample_name
-  colnames(InDel_VCF) <- c("Sample", "chr", "position", "REF", "ALT")
+generate_catalogs_from_mutations <- function(Indel_VCF=NULL, SNV_VCF=NULL, genome.v="hg38", sample_name=NULL){
+  ## if it is a list then it is a list of dataframes
+  ## if it is a vector is anything else
+  outlist = list()
 
-  InDel_catalog <- indelsig.tools.lib::indel_classifier89(indels = InDel_VCF, genome.v = genome.v)
-  InDel_catalog <- indelsig.tools.lib::gen_catalogue89(InDel_catalog, sample_col = "Sample")
-  InDel_catalog <- InDel_catalog[InDel_sigs_order,, drop=F]
+  library(indelsig.tools.lib)
+  class_and_catalog <- function(x, genome.v){
+    InDel_catalog <- indelsig.tools.lib::indel_classifier89(indels = x, genome.v = genome.v)
+    InDel_catalog <- indelsig.tools.lib::gen_catalogue89(InDel_catalog, sample_col = "Sample")
+    InDel_catalog <- InDel_catalog[InDel_sigs_order,, drop=F]
+    return(InDel_catalog)
+  }
 
-  colnames(InDel_catalog) <- sample_name
-  SNV_catalog <- signature.tools.lib::vcfToSNVcatalogue(vcfFilename = SNV_VCF_path, genome.v = genome.v)$catalogue
-  colnames(SNV_catalog) <- sample_name
-  return(list("Indel_Catalog"=InDel_catalog, "SNV_Catalog"=SNV_catalog, "total_SNV"=colSums(SNV_catalog), "total_InD"=nrow(InDel_VCF)))
+  if(is.null(Indel_VCF)==F){
+
+    if(is.atomic(Indel_VCF)){
+      Indel_VCF <- apply(array(Indel_VCF),1, function(y){
+        w <- read.table(y)[c(3,1,2,4,5)]
+        w$V3 <- basename(y)
+        colnames(w) <- c("Sample", "chr", "position", "REF", "ALT")
+        return(w)
+      })
+    }
+
+    nrow_InDel_catalogs <- unlist(lapply(Indel_VCF,function(y){
+      return(nrow(y))
+    }))
+
+    Indel_catalogs <- lapply(Indel_VCF, function(y){class_and_catalog(y, genome.v = genome.v)})
+
+    Indel_catalogs <- as.data.frame(do.call("cbind",Indel_catalogs))
+
+    if(is.null(sample_name)==F){
+      colnames(Indel_catalogs) <- sample_name
+    }
+    names(nrow_InDel_catalogs) <- colnames(Indel_catalogs)
+    outlist$Indel_Catalog = Indel_catalogs
+    outlist$total_InD = nrow_InDel_catalogs
+  }
+
+
+  if(is.null(SNV_VCF)==F){
+    if(is.atomic(SNV_VCF)){
+      SNV_catalogs <- lapply(SNV_VCF, function(x){signature.tools.lib::vcfToSNVcatalogue(vcfFilename = x, genome.v = genome.v)$catalogue})
+      SNV_catalogs <- do.call("cbind", SNV_catalogs)
+      if(is.null(sample_name)==F){
+        colnames(SNV_catalogs) <- sample_name
+      }
+    }else if(is(SNV_VCF, "list")){
+      SNV_catalogs <- lapply(SNV_VCF, function(x) {
+        signature.tools.lib::tabToSNVcatalogue(vcfFilename = x, genome.v = genome.v)$catalogue})
+      SNV_catalogs <- do.call("cbind", SNV_catalogs)
+      if(is.null(sample_name)==F){
+        colnames(SNV_catalogs) <- sample_name
+      }
+    }
+
+    outlist$SNV_Catalog=SNV_catalogs
+
+    outlist$total_SNV=colSums(SNV_catalogs)
+  }
+
+  return(outlist)
 }
