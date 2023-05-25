@@ -1,11 +1,8 @@
 Package: PRRDetect
-Title: What the Package Does (One Line, Title Case)
+Title: Generate PRRDetect scores
+Type: Package
 Version: 0.0.0.9000
-Authors@R: 
-    person("Giuseppe", "Rinaldi", , "gr454@cam.ac.uk", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-5650-6049"))
-Description: Computes PRRDetect score 
-License: 
+Authors@R: person("Giuseppe", "Rinaldi", email = "giuseppe.rinaldi1497@gmail.com", role = c("aut", "cre"))
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
