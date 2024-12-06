@@ -5,6 +5,7 @@
 -   [Introduction](#intro)
 -   [Install the package](#install)
 -   [Package documentation](#PackageDoc)
+-   [Using PRRDetect](#PackageUse)
 
 <a name="intro"/>
 
@@ -78,7 +79,9 @@ It outputs a table defining the probabilities of each sample to belong to the fo
     - The InDel fits have as rows the samples and as columns the signatures as "RefSig.InD"
     - The SNV fits have as rows the samples and as columns the signatures as "SBS"
   
-  
+
+<a name="PackageUse"/>
+
 ## Using PRRDetect
 
 
