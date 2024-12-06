@@ -11,3 +11,7 @@ Import:
 Remotes:
   xqzou/indelsig.tools.lib
   Nik-Zainal-Group/signature.tools.lib
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

@@ -26,7 +26,7 @@ prepare_PRRDetect <- function(InDel_Catalogs=NULL,SNV_Catalogs=NULL, Indel_VCF_p
 
   }
 
-  if(is.null(SNV_Catalogs)==F & is.null(SNV_Catalogs)==F){
+  if(is.null(SNV_Catalogs)==F & is.null(SNV_VCF_path)==F){
 
     message("Either SNV Catalogs or VCF information has to be provided")
     exit()
@@ -59,20 +59,25 @@ prepare_PRRDetect <- function(InDel_Catalogs=NULL,SNV_Catalogs=NULL, Indel_VCF_p
 
   if( is.null(Indel_VCF_path) == F | is.null(SNV_VCF_path)==F ){
 
-
-    if(is.null(InDel_Catalogs)==F){
-
-        sample_name = colnames(InDel_Catalogs)
-
-    }
-
-    if(is.null(SNV_Catalogs)==F){
-        sample_name= colnames(SNV_Catalogs)
-    }
-
-
      catalogs  <- generate_catalogs_from_mutations(Indel_VCF = Indel_VCF_path, SNV_VCF =  SNV_VCF_path,genome.v =  genome.v, sample_name = sample_name)
   }
+
+
+  if(is.null(InDel_Catalogs)==F & is.null(sample_name)){
+
+    sample_name = colnames(InDel_Catalogs)
+  }else if(!is.null(sample_name)){
+    colnames(InDel_Catalogs) <- sample_name
+  }
+
+
+  if(is.null(SNV_Catalogs)==F & is.null(sample_name)){
+    sample_name= colnames(SNV_Catalogs)
+  }else if(!is.null(sample_name)){
+    colnames(SNV_Catalogs) <- sample_name
+  }
+
+
 
 
 
@@ -106,13 +111,13 @@ prepare_PRRDetect <- function(InDel_Catalogs=NULL,SNV_Catalogs=NULL, Indel_VCF_p
 
   outlist <- list(SNV=SNV_fit, InDel=InDel_fit)
 
-  if("total_SNV" %in% names(catalogs)){
+  if(exists("catalogs$total_SNV")){
     outlist$total_SNV = catalogs$total_SNV
   }else{
     outlist$total_SNV = colSums(SNV_Catalogs)
   }
 
-  if("total_InD" %in% names(catalogs)){
+  if(exists("catalogs$total_InD")){
     outlist$total_InDel = catalogs$total_InD
   }else{
     outlist$total_InDel = colSums(InDel_Catalogs)

@@ -1,2 +1,5 @@
 .Rproj.user
 test/
+inst/doc
+/doc/
+/Meta/
