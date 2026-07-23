@@ -59,31 +59,19 @@ prepare_PRRDetect <- function(InDel_Catalogs=NULL,SNV_Catalogs=NULL, Indel_VCF_p
 
   if( is.null(Indel_VCF_path) == F | is.null(SNV_VCF_path)==F ){
 
-     catalogs  <- generate_catalogs_from_mutations(Indel_VCF = Indel_VCF_path, SNV_VCF =  SNV_VCF_path,genome.v =  genome.v, sample_name = sample_name)
+     catalogs  <- PRRDetect:::generate_catalogs_from_mutations(Indel_VCF = Indel_VCF_path, SNV_VCF =  SNV_VCF_path,genome.v =  genome.v, sample_name = sample_name)
+
   }
-
-
-  if(is.null(InDel_Catalogs)==F & is.null(sample_name)){
-
-    sample_name = colnames(InDel_Catalogs)
-  }else if(!is.null(sample_name)){
-    colnames(InDel_Catalogs) <- sample_name
-  }
-
-
-  if(is.null(SNV_Catalogs)==F & is.null(sample_name)){
-    sample_name= colnames(SNV_Catalogs)
-  }else if(!is.null(sample_name)){
-    colnames(SNV_Catalogs) <- sample_name
-  }
-
-
-
 
 
   if(is.null(SNV_VCF_path) == F){
 
     SNVC <- catalogs$SNV_Catalog
+
+    if(!is.null(sample_name)){
+
+      colnames(SNVC) <- sample_name
+    }
 
   }else{
 
@@ -95,13 +83,19 @@ prepare_PRRDetect <- function(InDel_Catalogs=NULL,SNV_Catalogs=NULL, Indel_VCF_p
 
     INDC <- catalogs$Indel_Catalog
 
+    if(!is.null(sample_name)){
+
+      colnames(INDC) <- sample_name
+    }
+
   }else{
 
     INDC <- InDel_Catalogs
 
   }
 
-  signature_fits <- Signature_fit(SNV_Catalog = SNVC , InDel_Catalog = INDC, organ, nparallel, setseed)
+
+  signature_fits <- PRRDetect:::Signature_fit(SNV_Catalog = SNVC , InDel_Catalog = INDC, organ, nparallel, setseed)
 
   SNV_fit <- signature_fits$SNV$exposures
 
@@ -111,13 +105,13 @@ prepare_PRRDetect <- function(InDel_Catalogs=NULL,SNV_Catalogs=NULL, Indel_VCF_p
 
   outlist <- list(SNV=SNV_fit, InDel=InDel_fit)
 
-  if(exists("catalogs$total_SNV")){
+  if(!is.null(catalogs$total_SNV)){
     outlist$total_SNV = catalogs$total_SNV
   }else{
     outlist$total_SNV = colSums(SNV_Catalogs)
   }
 
-  if(exists("catalogs$total_InD")){
+  if(!is.null(catalogs$total_InD)){
     outlist$total_InDel = catalogs$total_InD
   }else{
     outlist$total_InDel = colSums(InDel_Catalogs)

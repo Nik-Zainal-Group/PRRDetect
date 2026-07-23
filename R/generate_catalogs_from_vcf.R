@@ -41,7 +41,6 @@ generate_catalogs_from_mutations <- function(Indel_VCF=NULL, SNV_VCF=NULL, genom
   ## if it is a vector is anything else
   outlist = list()
 
-  library(indelsig.tools.lib)
   class_and_catalog <- function(x, genome.v){
     InDel_catalog <- indelsig.tools.lib::indel_classifier89(indels = x, genome.v = genome.v)
     InDel_catalog <- indelsig.tools.lib::gen_catalogue89(InDel_catalog, sample_col = "Sample")
